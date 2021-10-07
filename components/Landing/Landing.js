@@ -3,6 +3,7 @@ import { StatusBar, LogBox } from "react-native";
 import Register from '../SignIn/Register';
 import firebase from "firebase/app";
 import "firebase/auth";
+import "firebase/firestore";
 import firebaseConfig from "../../firebaseConfig";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -15,15 +16,22 @@ import Search from "../Search/Search";
 import { userContext } from "../../contexts/userContext";
 
 export default function Landing() {
+
   const Tab = createBottomTabNavigator();
   const Stack = createStackNavigator();
 
   if (firebase.apps.length == 0) firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
+  const db = firebase.firestore();
   const [user, setUser] = useContext(userContext);
 
   useEffect(() => {
-    if (auth.currentUser) setUser(auth.currentUser);
+    auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const existingUser = await db.collection("users").doc(user.uid).get();
+        setUser(existingUser.data());
+      };
+    });
   }, []);
 
   if (!user.userName) return (<>

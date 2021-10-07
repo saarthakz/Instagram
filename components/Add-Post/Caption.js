@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, Text, TextInput, Image, useWindowDimensions, Button } from 'react-native';
 import firebase from "firebase/app";
 import "firebase/firestore";
