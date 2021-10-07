@@ -4,7 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import { useNavigation } from "@react-navigation/native";
 
 export default function UploadPost({ setImage }) {
-  const StackNavigation = useNavigation();
+  const PostStackNavigation = useNavigation();
 
   async function selectImage(PostStackNavigation) {
 

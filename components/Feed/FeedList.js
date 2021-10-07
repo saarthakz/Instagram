@@ -44,27 +44,27 @@ export default function FeedList() {
     },
   });
 
-  useEffect(() => {
-    (async () => {
-      setPostDate((currentDate) => getLastDate(currentDate.date, currentDate.month, currentDate.year));
-      const allFollowingsRef = await db.collection("followers").where("follower", "==", user.userName).get();
-      setAllFollowings([]);
-      allFollowingsRef.forEach((snapshot) => setAllFollowings((prevFollowings) => [...prevFollowings, snapshot.data()]));
-      setFlag(true);
-    })();
-  }, []);
+  // useEffect(() => {
+  //   (async () => {
+  //     setPostDate((currentDate) => getLastDate(currentDate.date, currentDate.month, currentDate.year));
+  //     const allFollowingsRef = await db.collection("followers").where("follower", "==", user.userName).get();
+  //     setAllFollowings([]);
+  //     allFollowingsRef.forEach((snapshot) => setAllFollowings((prevFollowings) => [...prevFollowings, snapshot.data()]));
+  //     setFlag(true);
+  //   })();
+  // }, []);
 
-  useEffect(() => {
-    (async () => {
-      setAllPosts([]);
-      if (flag) {
-        allFollowings.forEach(async (following) => {
-          const currentFollowingPostsRef = await db.collection("posts").where("postBy", "==", following).where("date", "==", postDate.date).where("month", "==", postDate.month).where("year", "==", postDate.year).get();
-          currentFollowingPostsRef.forEach((snapshot) => setAllPosts((prevPosts) => [...prevPosts, snapshot.data()]));
-        });
-      };
-    })();
-  }, [flag]);
+  // useEffect(() => {
+  //   (async () => {
+  //     setAllPosts([]);
+  //     if (flag) {
+  //       allFollowings.forEach(async (following) => {
+  //         const currentFollowingPostsRef = await db.collection("posts").where("postBy", "==", following).where("date", "==", postDate.date).where("month", "==", postDate.month).where("year", "==", postDate.year).get();
+  //         currentFollowingPostsRef.forEach((snapshot) => setAllPosts((prevPosts) => [...prevPosts, snapshot.data()]));
+  //       });
+  //     };
+  //   })();
+  // }, [flag]);
 
   async function getMorePosts() {
     const scrollToIndex = allPosts.length - 1;
@@ -94,24 +94,32 @@ export default function FeedList() {
     setRefreshing(false);
   };
 
+  // return (<>
+  //   <StatusBar backgroundColor="black" />
+  //   <View>
+  //     <Text>Home</Text>
+  //     <FlatList
+  //       ref={flatListRef}
+  //       keyExtractor={(item, index) => index.toString()}
+  //       data={allPosts}
+  //       extraData={allPosts}
+  //       refreshing={refreshing}
+  //       onRefresh={() => refreshPosts()}
+  //       onEndReached={() => getMorePosts()}
+  //       renderItem={({ item, index }) => {
+  //         return (<>
+  //           {/* <Post /> */}
+  //         </>);
+  //       }}
+  //     />
+  //   </View>
+  // </>);
+
   return (<>
     <StatusBar backgroundColor="black" />
     <View>
       <Text>Home</Text>
-      <FlatList
-        ref={flatListRef}
-        keyExtractor={(item, index) => index.toString()}
-        data={allPosts}
-        extraData={allPosts}
-        refreshing={refreshing}
-        onRefresh={() => refreshPosts()}
-        onEndReached={() => getMorePosts()}
-        renderItem={({ item, index }) => {
-          return (<>
-            {/* <Post /> */}
-          </>);
-        }}
-      />
+
     </View>
   </>);
 };
