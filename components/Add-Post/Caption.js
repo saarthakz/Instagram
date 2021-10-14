@@ -18,18 +18,12 @@ export default function Caption({ image, TabNavigation }) {
 
   async function confirmPost(StackNavigation, TabNavigation) {
     const imageData = await (await fetch(image.uri)).blob();
-    const dateObj = new Date();
-    const date = dateObj.getUTCDate();
-    const month = dateObj.getUTCMonth();
-    const year = dateObj.getUTCFullYear();
     StackNavigation.goBack();
     TabNavigation.navigate("Feed");
 
     const { id } = await db.collection("posts").add({
       postBy: user.userName,
-      date,
-      month,
-      year,
+      createdAt: Date.now(),
       caption,
       likes: 0,
       comments: 0
