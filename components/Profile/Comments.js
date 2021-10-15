@@ -12,7 +12,7 @@ export default function Comments() {
   const auth = firebase.auth();
   const route = useRoute();
   const { post, owner } = route.params;
-  const commentCollection = db.collection("posts").doc(post.postID).collection("comments");
+  const commentCollection = db.collection("allPosts").doc(owner.userName).collection("posts").doc(post.postID).collection("comments");
   const [user, setUser] = useContext(userContext);
   const [allComments, setAllComments] = useState([]);
   const [comment, setComment] = useState("");
@@ -29,15 +29,9 @@ export default function Comments() {
   async function pushComment() {
     const postRef = db.collection("posts").doc(post.postID);
     const commentCount = (await postRef.get()).data().comments;
-    const dateObj = new Date();
-    const date = dateObj.getUTCDate();
-    const month = dateObj.getUTCMonth();
-    const year = dateObj.getUTCFullYear();
     const commentDoc = await commentCollection.add({
       comment,
-      date,
-      month,
-      year,
+      commentedAt: Date.now(),
       commentedBy: user.userName
     });
     await commentCollection.doc(commentDoc.id).update({

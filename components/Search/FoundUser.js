@@ -40,18 +40,10 @@ export default function FoundUser() {
     const userRef = db.collection("users").doc(user.userID);
 
     if (!following) {
-      const dateObj = new Date();
-      const date = {
-        date: dateObj.getUTCDate(),
-        month: dateObj.getUTCMonth(),
-        year: dateObj.getUTCFullYear(),
-        hour: dateObj.getUTCHours(),
-        minute: dateObj.getUTCMinutes()
-      };
       const followDoc = await followCollectionRef.add({
         follower: user.userName,
         followee: foundUser.userName,
-        date
+        date: Date.now()
       });
       const followID = followDoc.id;
       await followDoc.update({ followID });

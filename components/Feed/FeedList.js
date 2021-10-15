@@ -11,10 +11,11 @@ export default function FeedList() {
   const db = firebase.firestore();
   const [allFollowings, setAllFollowings] = useState([]);
   const [allPosts, setAllPosts] = useState([]);
-  const [postCountLimit, setPostCountLimit] = useState(10);
+  // const [refreshCounter, setRefreshCounter] = useState(1);
+  const hourInMilliSeconds = 1000 * 60 * 60;
+  const [endTime, setEndTime] = useState(Date.now() - hourInMilliSeconds);
   const [user, setUser] = useContext(userContext);
   const [followingFlag, setFollowingFlag] = useState(false);
-  const [postsFlag, setPostsFlag] = useState(false);
   const flatListRef = useRef(null);
 
   const styles = StyleSheet.create({
@@ -38,25 +39,20 @@ export default function FeedList() {
       setAllPosts([]);
       if (followingFlag) {
         allFollowings.forEach(async (following) => {
-          const currentFollowingPostsRef = await db.collection("posts").where("postBy", "==", following).orderBy("createdAt").limit(postCountLimit).get();
+          const currentFollowingPostsRef = db.collection("allPosts").doc(following.userName).collection("posts").orderBy("createdAt", "desc").endAt(endTime).get();
           currentFollowingPostsRef.forEach((snapshot) => setAllPosts((prevPosts) => [...prevPosts, snapshot.data()]));
-          setPostsFlag(true);
-          setFollowingFlag(false);
         });
       };
     })();
   }, [followingFlag]);
 
-  useFocusEffect(() => {
-    if (postsFlag) {
-      allPosts.sort((firstPost, secondPost) => secondPost.createdAt - firstPost.createdAt);
-      setPostsFlag(false);
-    };
-  }, [postsFlag]);
 
   async function getMorePosts() {
-    setPostCountLimit(20);
-    setFollowingFlag(true);
+    allFollowings.forEach(async (following) => {
+      const currentFollowingPostsRef = db.collection("allPosts").doc(following.userName).collection("posts").orderBy("createdAt", "desc").startAt(endTime).endAt(endTime - hourInMilliSeconds).get();
+      currentFollowingPostsRef.forEach((snapshot) => setAllPosts((prevPosts) => [...prevPosts, snapshot.data()]));
+    });
+    setEndTime(endTime - hourInMilliSeconds);
   };
 
   return (<>
@@ -78,11 +74,11 @@ export default function FeedList() {
     </View>
   </>);
 
-  return (<>
-    <StatusBar backgroundColor="black" />
-    <View>
-      <Text>Home</Text>
+  // return (<>
+  //   <StatusBar backgroundColor="black" />
+  //   <View>
+  //     <Text>Home</Text>
 
-    </View>
-  </>);
+  //   </View>
+  // </>);
 };

@@ -21,7 +21,7 @@ export default function Caption({ image, TabNavigation }) {
     StackNavigation.goBack();
     TabNavigation.navigate("Feed");
 
-    const { id } = await db.collection("posts").add({
+    const { id } = await db.collection("allPosts").doc(user.userName).collection("posts").add({
       postBy: user.userName,
       createdAt: Date.now(),
       caption,
@@ -37,7 +37,7 @@ export default function Caption({ image, TabNavigation }) {
       }
     }).then(async (snapshot) => {
       const postImageURL = await snapshot.ref.getDownloadURL();
-      await db.collection("posts").doc(id).update({ postImageURL, postID: id });
+      await db.collection("allPosts").doc(user.userName).collection("posts").doc(id).update({ postImageURL, postID: id });
     });
   };
 

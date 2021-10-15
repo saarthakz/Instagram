@@ -14,7 +14,7 @@ export default function Post() {
   const route = useRoute();
   const [user, setUser] = useContext(userContext);
   const { post, owner } = route.params;
-  const likeCollection = db.collection("posts").doc(post.postID).collection("likes");
+  const likeCollection = db.collection("allPosts").doc(owner.userName).collection("posts").doc(post.postID).collection("likes");
   const [like, setLike] = useState("");
 
   useEffect(() => {
@@ -29,15 +29,9 @@ export default function Post() {
     const likes = (await postRef.get()).data().likes;
 
     if (!like) {
-      const dateObj = new Date();
-      const date = dateObj.getUTCDate();
-      const month = dateObj.getUTCMonth();
-      const year = dateObj.getUTCFullYear();
       const likeDoc = await likeCollection.add({
         likedBy: user.userName,
-        date,
-        month,
-        year
+        likedAt: Date.now(),
       });
       await likeCollection.doc(likeDoc.id).update({
         likeID: likeDoc.id
